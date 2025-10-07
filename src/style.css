@@ -1,0 +1,55 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+body p{
+  text-align: center;
+}
+
+body h1 {
+  text-align: center;
+}
+
+.characters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.card {
+  border: 1px solid #bbb;
+  border-radius: 8px;
+  background: linear-gradient(to right, rgb(230, 125, 6), rgb(214, 56, 7));
+  padding: 1rem;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card img {
+  height: 250px;     /* fija una altura, por ejemplo 200px */
+  width: auto;       /* que el ancho se ajuste manteniendo proporción */
+  object-fit: contain; /* asegura que la imagen se ajuste dentro del espacio sin recortarse */
+  border-radius: 8px;  /* si quieres que tengan esquinas redondeadas */
+  transition: transform 0.3s ease;
+  overflow: visible;
+}
+
+.card img:hover {
+  transform: scale(1.1); /* crece un 10% */
+  cursor: pointer; /* cambia el cursor para indicar que es interactiva */
+}
+
+.card h3 {
+  margin: 10px 0 5px 0;
+  font-size: 1.2rem;
+  color: silver;
+}
+
+.card p {
+  margin: 0;
+  font-size: 0.96rem;
+  color: white;
+}
