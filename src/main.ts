@@ -1,49 +1,40 @@
-import './style.css'
-import { fromEvent, from } from 'rxjs';
-import { switchMap, tap, finalize } from 'rxjs/operators';
+import "./styles.css"
+import { fromFetch } from 'rxjs/fetch';
+import { BehaviorSubject, switchMap} from "rxjs";
+import { Personaje } from "./interface";
+import { crearCartaPersonaje } from "./PersonajeCardComponent";
 
-interface Character {
-  name: string;
-  race: string;
-  ki: number;
-  description?: string;
-  image: string;
+const grid = document.getElementsByClassName("grid")[0];
+
+const currentPage = new BehaviorSubject(1);
+
+function nextPage(n:number){
+  currentPage.next(n);
 }
+(window as any).nextPage  = nextPage
 
-function fetchCharacters() {
-  return fetch('https://dragonball-api.com/api/characters')
-  .then(res => res.json())
-  .then(data => data.items as Character[]);
-}
-
-const container = document.querySelector('.characters') as HTMLDivElement;
-
-fromEvent(document, 'DOMContentLoaded')
-  .pipe(
-    tap(() => {
-      container.innerHTML = `<p style="font-size:1.2em;">Cargando personajes...</p>`;
-    }),
-    switchMap(() => from(fetchCharacters())),
-    finalize(() => {
-
+currentPage.subscribe({
+  next: (value)=>{
+    limpiarGrid();
+    fromFetch(`https://dragonball-api.com/api/characters?page=${value}`).pipe(
+      switchMap(
+        (response) => response.json())
+    ).subscribe((json)=>{
+      const personajes :Personaje[] = json['items']
+      personajes.forEach((each)=>{ grid.innerHTML += crearCartaPersonaje(each) })
     })
-  )
-  .subscribe({
-    next: (characters: Character[]) => {
-      container.innerHTML = characters.map(info => `
-        <div class="card">
-          <img src="${info.image}" alt="${info.name}" />
-          <h3>${info.name}</h3>
-          <p><u>Descripción</u>: ${info.description || 'Desconocida'}</p>
-          <p><u>Raza</u>: ${info.race || 'Desconocida'}</p>
-          <p><u>Poder</u>: ${info.ki || 'Desconocido'}</p>
-        </div>
-      `).join('');
-    },
-    error: err => {
-      container.innerHTML = `<p style="color:red;">Error cargando personajes: ${err}</p>`;
-    }
-  });
+  }
+})
+
+function limpiarGrid(){
+
+  const elementos = Array.from(grid.children);
+
+  elementos.forEach((el)=>{
+    if(!el.classList.contains("paginacion"))
+      el.remove();
+  })
+}
 
 /*async function LoadCharacters() {
   const answer = await fetch('https://dragonball-api.com/api/characters');
